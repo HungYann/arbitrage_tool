@@ -345,8 +345,47 @@ BINANCE_INVERT_PRICE=true
 - 数据持久化：订单、日志、配置保存在数据库，不依赖内存
 - 自动备份：定期备份交易数据和配置
 
+## 📚 文档和资源
+
+### 项目文档
+
+| 文档 | 说明 | 位置 |
+|------|------|------|
+| **README** | 项目概述、快速开始 | [README.md](README.md) |
+| **MIT License** | 开源许可证 | [LICENSE](LICENSE) | 
+| **环境变量示例** | 配置模板 | [.env.example](.env.example) |
+| **产品规格书** | 需求文档 | [docs/product_tool_document.md](docs/product_tool_document.md) |
+
+### CI/CD 和部署指南
+
+| 文档 | 说明 | 位置 |
+|------|------|------|
+| **CI/CD 完整指南** | GitHub Actions 工作流、本地开发工具 | [.github/CI-CD-GUIDE.md](.github/CI-CD-GUIDE.md) |
+| **Mintlify 部署指南** | 文档构建、GitHub Pages 配置、常见问题 | [.github/MINTLIFY-DEPLOYMENT.md](.github/MINTLIFY-DEPLOYMENT.md) |
+| **GitHub Actions 工作流** | 代码质量、测试、安全扫描 | [.github/workflows/ci.yml](.github/workflows/ci.yml) |
+| **文档部署工作流** | Mintlify 构建和部署配置 | [.github/workflows/deploy-docs.yml](.github/workflows/deploy-docs.yml) |
+
+### 在线文档
+
+| 文档 | 链接 |
+|------|------|
+| **项目文档网站** | [https://hungyann.github.io/arbitrage_tool/](https://hungyann.github.io/arbitrage_tool/) |
+| **GitHub 仓库** | [https://github.com/HungYann/arbitrage_tool](https://github.com/HungYann/arbitrage_tool) |
+| **GitHub Releases** | [https://github.com/HungYann/arbitrage_tool/releases](https://github.com/HungYann/arbitrage_tool/releases) |
+
+### 开发和部署
+
+| 工具/框架 | 用途 | 配置文件 |
+|---------|------|--------|
+| **FastAPI** | 后端 API 框架 | [app/main.py](app/main.py) |
+| **Mintlify** | 文档框架 | [mintlify-docs/docs.json](mintlify-docs/docs.json) |
+| **Docker Compose** | 容器编排 | [docker-compose.yml](docker-compose.yml) |
+| **Dockerfile** | 应用容器配置 | [Dockerfile](Dockerfile) |
+| **Python 配置** | 代码风格和测试 | [pyproject.toml](pyproject.toml) |
+| **Flake8 配置** | Python 代码检查 | [.flake8](.flake8) |
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-MIT License © 2024 Andrew Liu
+MIT License © 2026 Andrew Liu
