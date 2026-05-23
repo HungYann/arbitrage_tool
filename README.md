@@ -223,6 +223,265 @@ sudo systemctl start arbitrage
 3. 定期备份日志和配置文件
 4. 监控 EC2 账单和资源使用，设置告警
 
+## 容器化部署
+
+### Docker Compose 本地开发
+
+快速启动完整的开发环境：
+
+```bash
+# 克隆仓库
+git clone https://github.com/HungYann/arbitrage_tool.git
+cd arbitrage_tool
+
+# 创建并配置环境变量
+cp .env.example .env
+nano .env  # 编辑配置（API密钥、数据库密码等）
+
+# 启动所有服务（应用、Redis、PostgreSQL、文档）
+docker compose up -d --build
+
+# 查看服务状态
+docker compose ps
+
+# 查看应用日志
+docker compose logs -f app
+```
+
+服务访问地址：
+- **应用服务**: http://127.0.0.1:8000
+- **后台管理**: http://127.0.0.1:8000/admin
+- **API 文档**: http://127.0.0.1:8000/docs
+- **Mintlify 文档**: http://127.0.0.1:3000
+- **健康检查**: http://127.0.0.1:8000/health
+
+### 生产环境 Docker 部署
+
+#### 构建和推送镜像
+
+```bash
+# 构建镜像
+docker build -t arbitrage-tool:latest .
+
+# 标签镜像（以便推送到仓库）
+docker tag arbitrage-tool:latest your-registry/arbitrage-tool:latest
+
+# 推送到镜像仓库（Docker Hub、AWS ECR、Azure ACR 等）
+docker push your-registry/arbitrage-tool:latest
+
+# 在服务器上拉取并运行
+docker pull your-registry/arbitrage-tool:latest
+docker run -d \
+  --name arbitrage-tool \
+  -p 8000:8000 \
+  --env-file .env \
+  -v arbitrage-data:/app/data \
+  your-registry/arbitrage-tool:latest
+```
+
+#### 使用 Docker Compose 部署整个技术栈
+
+```bash
+# 在生产服务器上启动完整的应用栈
+docker compose -f docker-compose.yml up -d --build
+
+# 验证所有服务
+docker compose ps
+
+# 查看应用日志
+docker compose logs -f app
+
+# 升级服务（拉取最新镜像并重启）
+docker compose pull
+docker compose up -d
+```
+
+### 容器管理命令
+
+```bash
+# 查看所有容器
+docker compose ps
+
+# 查看特定服务日志
+docker compose logs app
+docker compose logs postgres
+docker compose logs redis
+
+# 进入容器进行调试
+docker compose exec app /bin/bash
+docker compose exec postgres psql -U arbitrage -d arbitrage
+
+# 重启单个服务
+docker compose restart app
+
+# 停止所有服务
+docker compose down
+
+# 停止并删除数据卷
+docker compose down -v
+
+# 清理未使用的镜像和卷
+docker system prune -a
+```
+
+## GitHub Actions CI/CD 流程
+
+本项目配置了企业级的 GitHub Actions 自动化流程，提供代码质量控制、自动化测试、安全扫描和文档部署。
+
+### CI 工作流（.github/workflows/ci.yml）
+
+**触发条件**：任何 push 或 PR 到 `main`/`develop` 分支
+
+**自动执行的检查**：
+
+```
+┌─ 代码质量检查
+│  ├─ Flake8：语法和风格检查
+│  ├─ Black：代码格式化验证
+│  └─ isort：Import 排序检查
+│
+├─ 单元测试
+│  ├─ Python 3.10 环境
+│  ├─ Python 3.11 环境
+│  ├─ Python 3.12 环境
+│  └─ 代码覆盖率上报（Codecov）
+│
+├─ Docker 镜像构建
+│  └─ 构建应用镜像（仅在 main 分支）
+│
+├─ 安全扫描
+│  ├─ Bandit：Python 代码安全扫描
+│  ├─ Safety：依赖包漏洞检查
+│  └─ TruffleHog：敏感信息泄露检测
+│
+└─ 文档构建
+   └─ Mintlify 文档链接验证
+```
+
+**运行时间**：~10-12 分钟
+
+**监控方式**：
+1. GitHub Actions 标签 → "CI/CD Pipeline"
+2. 点击最新的工作流运行
+3. 查看各步骤的执行日志
+
+### 文档部署工作流（.github/workflows/deploy-docs.yml）
+
+**触发条件**：Push 到 main 分支 + mintlify-docs/ 文件变更
+
+**自动执行**：
+
+```
+构建 Mintlify 文档
+  ├─ Node.js 18 环境
+  ├─ npm 依赖安装（启用缓存）
+  ├─ 链接完整性检查（npm run broken-links）
+  └─ Mintlify 输出准备
+
+部署到 GitHub Pages
+  └─ Static HTML 部署（无需 Jekyll 重复编译）
+```
+
+**运行时间**：~3-5 分钟
+
+**文档访问地址**：https://hungyann.github.io/arbitrage_tool/
+
+### 本地开发和 CI 同步
+
+#### 安装开发工具
+
+```bash
+# 安装代码检查和测试工具
+pip install black isort flake8 bandit pytest pytest-cov
+
+# 或使用 pre-commit hooks（推荐自动检查）
+pip install pre-commit
+pre-commit install
+```
+
+#### 提交前本地检查
+
+```bash
+# 自动格式化代码
+black app tests
+isort app tests
+
+# 检查代码风格
+flake8 app tests
+
+# 运行单元测试
+pytest tests/ -v --cov=app --cov-report=html
+
+# 安全扫描
+bandit -r app
+```
+
+#### 完整的本地模拟 CI 环境
+
+```bash
+# 启动 Docker 开发环境
+docker compose up -d
+
+# 运行所有检查
+black --check app tests
+isort --check-only app tests
+flake8 app tests
+pytest tests/ -v --cov=app
+bandit -r app
+
+# 检查 Mintlify 文档
+cd mintlify-docs
+npm install
+npm run broken-links
+cd ..
+```
+
+### 分支保护和代码审查流程
+
+**推荐的分支保护规则**（Settings → Branches）：
+
+1. Branch name pattern：`main`
+2. 启用以下选项：
+   - ✅ Require a pull request before merging
+   - ✅ Require approvals（至少 1 个）
+   - ✅ Require status checks to pass
+   - ✅ Require branches to be up to date before merging
+   - ✅ Dismiss stale pull request approvals when new commits are pushed
+
+这样强制所有 PR 必须通过 CI 检查且获得代码审查才能合并。
+
+**标准工作流**：
+
+1. 创建 feature 分支：`git checkout -b feature/your-feature`
+2. 进行开发并提交：`git commit -m "feat: add feature"`
+3. Push 到 GitHub：`git push origin feature/your-feature`
+4. 创建 Pull Request
+5. GitHub Actions 自动运行 CI 检查
+6. 等待检查通过（绿色 ✅）
+7. 请求代码审查和 Approve
+8. 合并到 main 分支
+9. 自动部署文档和应用
+
+### CI/CD 故障排查
+
+**PR 检查失败怎么办？**
+
+1. 查看 Actions 标签中的失败日志
+2. 本地运行相同的检查命令
+3. 修复问题后重新 push
+4. CI 自动重新运行检查
+
+**常见问题**：
+
+| 问题 | 原因 | 解决方案 |
+|------|------|--------|
+| Flake8 失败 | 代码风格不符合规范 | 运行 `black app tests` 后重新提交 |
+| Black 失败 | 代码格式错误 | 运行 `black app tests` 格式化代码 |
+| isort 失败 | Import 排序错误 | 运行 `isort app tests` 排序 import |
+| 测试失败 | 单元测试不通过 | 本地运行 `pytest` 调试并修复 |
+| Bandit 失败 | 代码有安全问题 | 查看日志中的安全建议并修复 |
+| 文档部署失败 | 链接检查失败 | 检查 `npm run broken-links` 输出并修复链接 |
+
 ## Codex 插件和 MCP
 
 本仓库还包含一个 Codex 插件：
