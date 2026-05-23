@@ -303,3 +303,9 @@ BINANCE_INVERT_PRICE=true
 - API key 不要写进代码，使用环境变量或 VPS 的 secret 管理。
 - 每次下单前必须检查余额、手续费、滑点、最小下单额、最大单笔金额和当日亏损上限。
 - 任何异常都应记录日志，不能静默失败。
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+MIT License © 2024 Andrew Liu
