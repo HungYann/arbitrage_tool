@@ -1,0 +1,2 @@
+"""Open arbitrage FastAPI tool."""
+

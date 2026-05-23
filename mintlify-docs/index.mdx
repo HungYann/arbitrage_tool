@@ -1,0 +1,51 @@
+---
+title: "Open Arbitrage Tool"
+description: "Onboard, run, and operate a tranche-based USDT/USD arbitrage bot."
+---
+
+Open Arbitrage Tool is a FastAPI-based prototype for stable-pair arbitrage. It splits a USD budget into independent tranches, buys only below a hard buy ceiling, sells only above a hard sell floor, and checks each tranche's net profit before execution.
+
+<Warning>
+  This project defaults to paper trading. Do not connect live exchange credentials until you have tested the strategy, configured risk limits, and removed withdrawal permissions from every API key.
+</Warning>
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/get-started/quickstart">
+    Install dependencies, start FastAPI, and run the first paper-trading tick.
+  </Card>
+  <Card title="Onboarding" icon="list-check" href="/get-started/onboarding">
+    Follow the operator checklist before running on a VPS.
+  </Card>
+  <Card title="Strategy" icon="chart-line" href="/core-concepts/strategy">
+    Learn how tranches, thresholds, and inventory-based exits work.
+  </Card>
+  <Card title="API overview" icon="code" href="/reference/api-overview">
+    Explore endpoints for config, state, ticks, logs, and resets.
+  </Card>
+</CardGroup>
+
+## What it does
+
+- Allocates capital into configurable tranches, such as `30,000 USD / 3 = 10,000 USD` per tranche.
+- Opens a paper buy when price is at or below the buy trigger.
+- Tracks each tranche separately with entry price, notional, amount, and timestamp.
+- Sells a tranche only when the current exit price covers fees, slippage, and minimum profit.
+- Stores tick decisions and portfolio snapshots in JSONL logs.
+- Exposes status and controls through FastAPI.
+
+## Recommended rollout
+
+<Steps>
+  <Step title="Run locally">
+    Start with paper trading and inspect `/docs`, `/state`, `/tick`, and `/logs`.
+  </Step>
+  <Step title="Tune parameters">
+    Adjust tranche count, threshold bps, fee bps, slippage bps, and min profit bps.
+  </Step>
+  <Step title="Operate on VPS">
+    Deploy with systemd, persistent logs, and read-only monitoring first.
+  </Step>
+  <Step title="Add exchange execution">
+    Implement a broker adapter only after dry-run behavior is stable.
+  </Step>
+</Steps>

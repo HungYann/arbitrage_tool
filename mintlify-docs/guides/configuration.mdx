@@ -1,0 +1,144 @@
+---
+title: "Configuration"
+description: "Available parameters and recommended starting values."
+---
+
+## Runtime config
+
+The API exposes config at:
+
+```bash
+curl http://127.0.0.1:8000/config
+```
+
+You can update it with:
+
+```bash
+curl -X PUT http://127.0.0.1:8000/config \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "total_capital_usd": 30000,
+    "tranche_count": 3,
+    "strategy_mode": "gradient",
+    "reference_price": 1.0,
+    "buy_threshold_bps": 5,
+    "min_profit_bps": 5,
+    "fee_bps": 1,
+    "slippage_bps": 1,
+    "min_notional_usd": 10,
+    "max_open_tranches": 3,
+    "max_buy_price": 0.9994,
+    "min_sell_price": 1.0,
+    "grid_step": 0.0005,
+    "min_buy_price": 0.9900,
+    "max_usdt_allocation_pct": 1.0
+  }'
+```
+
+<Warning>
+  Updating config resets the current paper portfolio in this prototype. Save logs first if you need the previous state.
+</Warning>
+
+## Parameter guide
+
+| Parameter | Meaning | Conservative start |
+| --- | --- | --- |
+| `total_capital_usd` | Paper capital base | `30000` |
+| `tranche_count` | Number of capital slices, configurable from `1` to `20` | `3` |
+| `strategy_mode` | `static` or one-tranche-per-level `gradient` | `gradient` |
+| `reference_price` | Anchor price | `1.0` |
+| `buy_threshold_bps` | Buy trigger below reference | `5` |
+| `min_profit_bps` | Net profit required to sell | `5` |
+| `fee_bps` | Single-side fee estimate | Exchange-specific |
+| `slippage_bps` | Single-side slippage estimate | Start higher than expected |
+| `min_notional_usd` | Smallest order value | Exchange-specific |
+| `max_open_tranches` | Max inventory slots, also capped at `20` | Less than or equal to `tranche_count` |
+| `max_buy_price` | Hard buy ceiling | `0.9994` |
+| `min_sell_price` | Hard sell floor | `1.0` |
+| `grid_step` | Gradient buy-level spacing | `0.0005` |
+| `min_buy_price` | Legacy field; current strategy does not use it as a buy circuit breaker | `0.9900` |
+| `max_usdt_allocation_pct` | Max portfolio value held as USDT | `1.0` |
+
+## Binance market config
+
+```bash
+BINANCE_SYMBOL=USDTUSD
+BINANCE_BASE_ASSET=USDT
+BINANCE_QUOTE_ASSET=USD
+BINANCE_INVERT_PRICE=false
+BINANCE_REST_URL=https://api.binance.com
+BINANCE_WS_URL=wss://data-stream.binance.vision/ws
+BINANCE_WS_ENABLED=false
+BINANCE_WS_MAX_CONNECTION_SECONDS=85500
+BINANCE_WS_MESSAGE_TIMEOUT_SECONDS=15
+BINANCE_LIVE_TRADING=false
+ADMIN_AUTH_ENABLED=true
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=change-me-before-deploy
+ADMIN_PASSWORD_HASH=
+ADMIN_SECRET_KEY=replace-with-at-least-32-random-characters
+ADMIN_SESSION_TTL_SECONDS=28800
+ADMIN_SECURE_COOKIE=false
+CCXT_ENABLED=true
+CCXT_EXCHANGE_ID=binance
+CCXT_SYMBOL=USDT/USD
+CCXT_TIMEOUT_MS=10000
+```
+
+The Binance quote stream starts automatically when the FastAPI process starts. Check it with:
+
+```bash
+curl http://127.0.0.1:8000/broker/ws/status
+```
+
+The stream name is built as `<symbol>@bookTicker`, for example `usdtusd@bookTicker`. The default business pair is `USDT/USD`: USD is both the accounting unit and the payment unit.
+
+Binance Spot WebSocket streams use `/ws/<streamName>` for direct streams and `/stream?streams=<streamName1>/<streamName2>` for combined streams. Symbols in stream names must be lowercase. The service uses a direct stream by default and can parse combined-stream payload envelopes if the URL is changed later.
+
+`wss://data-stream.binance.vision` is market-data only. Keep account reads and order placement on the REST API. The stream client handles PING/PONG through the WebSocket library, reconnects before Binance's 24-hour connection limit, and reconnects after a `serverShutdown` event.
+
+If your Binance environment does not expose a direct USD market, configure any proxy market explicitly and keep that distinction visible:
+
+```bash
+BINANCE_SYMBOL=USDCUSDT
+BINANCE_BASE_ASSET=USDT
+BINANCE_QUOTE_ASSET=USDC
+BINANCE_INVERT_PRICE=true
+```
+
+The proxy mode is not the default strategy accounting model; it is only a market/execution adapter.
+
+## CCXT adapter
+
+The service uses regular `ccxt` for REST exchange operations:
+
+- `fetch_ticker` for one-off broker quotes.
+- `fetch_balance` for account balances.
+- `create_order` for future live market orders.
+
+Realtime Admin prices still come from the Binance WebSocket stream. Regular `ccxt` does not provide free WebSocket streams; use CCXT Pro or keep the current Binance stream client if you want live updates.
+
+The default CCXT exchange is Binance main site: `CCXT_EXCHANGE_ID=binance`. Keep `CCXT_SYMBOL=USDT/USD` only when the account environment supports that market; otherwise set the exact Binance main-site spot symbol you intend to trade and verify in paper mode first.
+
+## Admin authentication
+
+Admin pages and `/admin/api/*` are protected by a signed HttpOnly cookie. Set these values in `.env` before deployment:
+
+| Variable | Meaning |
+| --- | --- |
+| `ADMIN_USERNAME` | Login username |
+| `ADMIN_PASSWORD` | Local plaintext password for quick setup |
+| `ADMIN_PASSWORD_HASH` | Optional PBKDF2 password hash; prefer this for deployment |
+| `ADMIN_SECRET_KEY` | HMAC signing key, at least 32 characters |
+| `ADMIN_SESSION_TTL_SECONDS` | Cookie lifetime |
+| `ADMIN_SECURE_COOKIE` | Set to `true` behind HTTPS |
+
+## Docker middleware
+
+Run the app plus Redis and Postgres:
+
+```bash
+docker compose --env-file .env up -d --build
+```
+
+Redis and Postgres are included as middleware for future cache, task, structured log, and configuration persistence. The current prototype still writes audit events to JSONL.

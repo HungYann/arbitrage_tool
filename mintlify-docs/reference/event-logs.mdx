@@ -1,0 +1,50 @@
+---
+title: "Event logs"
+description: "How JSONL logs are structured and used during operations."
+---
+
+The event store writes one JSON object per line:
+
+```text
+data/events.jsonl
+```
+
+## Tick event
+
+```json
+{
+  "ts": "2026-05-15T04:54:31.718037+00:00",
+  "type": "tick",
+  "payload": {
+    "request": {
+      "price": 1.0003,
+      "execute": true
+    },
+    "decision": {
+      "action": "sell",
+      "expected_profit_bps": 5.0022,
+      "executed": true
+    },
+    "state": {
+      "usd_available": 30000.25,
+      "usdt_available": 0,
+      "realized_profit_usd": 0.25,
+      "open_tranches": []
+    }
+  }
+}
+```
+
+## Why JSONL
+
+- Easy to append.
+- Easy to tail on VPS.
+- Works with shell tools.
+- Can be imported into SQLite, DuckDB, or data warehouses later.
+
+## Useful commands
+
+```bash
+tail -n 20 data/events.jsonl
+curl 'http://127.0.0.1:8000/logs?limit=20'
+```

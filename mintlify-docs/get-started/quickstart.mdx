@@ -1,0 +1,76 @@
+---
+title: "Quickstart"
+description: "Install, run, and send your first paper-trading signals."
+---
+
+## Requirements
+
+- Python 3.11 or newer
+- A shell on macOS, Linux, or a VPS
+- No exchange API key required for paper trading
+
+## Install
+
+From the tool directory:
+
+```bash
+cd /Users/liuhongyang/Desktop/content/arbitrage_tool
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+## Start the API
+
+```bash
+uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+Open the interactive FastAPI docs:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+## Send a buy tick
+
+At the default configuration, `max_buy_price=0.9994`, so `0.9994` or lower can trigger a buy. Prices between `0.9995` and `0.9999` are the quiet band.
+
+```bash
+curl -X POST http://127.0.0.1:8000/tick \
+  -H 'Content-Type: application/json' \
+  -d '{"price":0.9994,"execute":true}'
+```
+
+Expected result:
+
+```json
+{
+  "action": "buy",
+  "reason": "price is below buy trigger",
+  "price": 0.9994,
+  "notional_usd": 10000.0,
+  "executed": true
+}
+```
+
+## Send a sell tick
+
+```bash
+curl -X POST http://127.0.0.1:8000/tick \
+  -H 'Content-Type: application/json' \
+  -d '{"price":1.0003,"execute":true}'
+```
+
+If the tranche clears the minimum profit after costs, the tool returns `sell` and realizes paper profit.
+
+## Inspect state and logs
+
+```bash
+curl http://127.0.0.1:8000/state
+curl 'http://127.0.0.1:8000/logs?limit=20'
+```
+
+<Tip>
+  Quote URLs that include `?` in zsh, otherwise the shell may treat them as glob patterns.
+</Tip>

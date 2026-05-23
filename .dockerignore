@@ -1,0 +1,8 @@
+.venv
+__pycache__
+*.pyc
+.DS_Store
+mintlify-docs/node_modules
+mintlify-docs/.mintlify
+data/events.jsonl
+.env

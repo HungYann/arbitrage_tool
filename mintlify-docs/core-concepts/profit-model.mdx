@@ -1,0 +1,42 @@
+---
+title: "Profit model"
+description: "How fees, slippage, and minimum profit bps are calculated."
+---
+
+The tool evaluates each tranche on a net basis.
+
+## Buy side
+
+```text
+cost_rate = (fee_bps + slippage_bps) / 10000
+usdt_amount = notional_usd / entry_price * (1 - cost_rate)
+```
+
+Example with defaults:
+
+```text
+notional_usd = 10000
+entry_price = 0.9994
+fee_bps = 1
+slippage_bps = 1
+cost_rate = 0.0002
+usdt_amount = 10000 / 0.9994 * 0.9998
+```
+
+## Sell side
+
+```text
+net_usd = usdt_amount * exit_price * (1 - cost_rate)
+profit_usd = net_usd - notional_usd
+profit_bps = profit_usd / notional_usd * 10000
+```
+
+The strategy sells only when:
+
+```text
+profit_bps >= min_profit_bps
+```
+
+## Practical implication
+
+If your target spread is `5 bps`, your actual gross price movement needs to be larger than `5 bps` because fees and slippage consume part of the spread. With `1 bps` fee and `1 bps` slippage per side, the round trip costs about `4 bps`, so a `5 bps` net target needs roughly `9 bps` gross improvement.

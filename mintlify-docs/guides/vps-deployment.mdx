@@ -1,0 +1,72 @@
+---
+title: "VPS deployment"
+description: "Deploy the FastAPI service on a VPS with systemd."
+---
+
+## Directory layout
+
+```text
+/opt/open-arbitrage-tool
+  app/
+  data/
+  mintlify-docs/
+  requirements.txt
+  .env
+```
+
+## Environment file
+
+Create `/opt/open-arbitrage-tool/.env`:
+
+```bash
+TRADING_MODE=paper
+ARBITRAGE_DATA_DIR=/opt/open-arbitrage-tool/data
+ARBITRAGE_TOTAL_CAPITAL_USD=30000
+ARBITRAGE_TRANCHE_COUNT=3
+ARBITRAGE_STRATEGY_MODE=gradient
+ARBITRAGE_REFERENCE_PRICE=1.0
+ARBITRAGE_BUY_THRESHOLD_BPS=5
+ARBITRAGE_MIN_PROFIT_BPS=5
+ARBITRAGE_FEE_BPS=1
+ARBITRAGE_SLIPPAGE_BPS=1
+ARBITRAGE_MAX_OPEN_TRANCHES=3
+ARBITRAGE_MAX_BUY_PRICE=0.9994
+ARBITRAGE_MIN_SELL_PRICE=1.0
+ARBITRAGE_GRID_STEP=0.0005
+ARBITRAGE_MIN_BUY_PRICE=0.9900
+```
+
+## systemd unit
+
+```ini
+[Unit]
+Description=Open Arbitrage Tool
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/open-arbitrage-tool
+EnvironmentFile=/opt/open-arbitrage-tool/.env
+ExecStart=/opt/open-arbitrage-tool/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+```
+
+## Start service
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable open-arbitrage-tool
+sudo systemctl start open-arbitrage-tool
+sudo systemctl status open-arbitrage-tool
+```
+
+## Operational checks
+
+- `GET /health` returns `paper`.
+- `GET /logs` shows recent ticks.
+- Disk has space for JSONL logs.
+- Firewall only exposes intended ports.
+- No exchange key is present until live trading is intentionally implemented.

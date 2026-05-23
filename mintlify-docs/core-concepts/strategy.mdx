@@ -1,0 +1,77 @@
+---
+title: "Strategy"
+description: "How the tranche-based arbitrage strategy differs from a fixed threshold rule."
+---
+
+## Fixed threshold baseline
+
+The simple rule is:
+
+- Buy `USDT` with `USD` when `USDT/USD <= 0.9994`.
+- Sell `USDT` back to `USD` when `USDT/USD >= 1.0000`.
+
+This captures an apparent `5 bps` spread. It is easy to reason about, but it treats the whole account as one position and does not distinguish inventory bought at different prices.
+
+## Tranche-based inventory
+
+The tool uses independent tranches instead:
+
+```text
+total capital = 30,000 USD
+tranche count = 3
+tranche size = 10,000 USD
+strategy mode = gradient
+```
+
+Each buy creates a tranche:
+
+```json
+{
+  "entry_price": 0.9994,
+  "notional_usd": 10000,
+  "usdt_amount": 10004.002401440866,
+  "grid_index": 1
+}
+```
+
+When a new price arrives, the engine checks sell opportunities first, but only if price is at or above `min_sell_price`. If no sell is profitable, the engine may open a new buy tranche only if price is at or below `max_buy_price` and there is remaining tranche capacity.
+
+## Hard bounds
+
+- `max_buy_price=0.9994`: prices above this never trigger buys.
+- `min_sell_price=1.0000`: prices below this never trigger sells.
+- `0.9996 ~ 0.9999`: quiet band, no buy or sell.
+- `min_buy_price=0.9900`: retained as a legacy configuration field, but the current strategy no longer uses it as a buy circuit breaker.
+
+## Dynamic gradient mode
+
+In `gradient` mode, buy levels start at `max_buy_price` and move downward by `grid_step`:
+
+```text
+#1 <= 0.9994
+#2 <= 0.9990
+#3 <= 0.9985
+```
+
+Each level opens at most one tranche. This keeps capital distributed across price depth instead of repeatedly buying the same price band.
+
+## Why sell first?
+
+Selling profitable inventory before buying more reduces inventory drift. It also lets the strategy harvest a rebound without waiting for a global exit price.
+
+## Decision order
+
+<Steps>
+  <Step title="Validate price">
+    Invalid or non-positive prices produce `hold`.
+  </Step>
+  <Step title="Find profitable sell">
+    Open tranches are evaluated only when price is at or above the sell floor.
+  </Step>
+  <Step title="Check buy capacity">
+    The portfolio must have USD, room for another tranche, and allocation capacity.
+  </Step>
+  <Step title="Open buy if below hard cap">
+    A new tranche opens only when price is at or below the configured buy hard cap and matches an unfilled gradient level.
+  </Step>
+</Steps>

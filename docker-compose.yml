@@ -1,0 +1,160 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: open-arbitrage-app
+    restart: unless-stopped
+    environment:
+      TRADING_MODE: live
+      ARBITRAGE_DATA_DIR: /app/data
+      ARBITRAGE_TOTAL_CAPITAL_USD: "30000"
+      ARBITRAGE_TRANCHE_COUNT: "10"
+      ARBITRAGE_STRATEGY_MODE: gradient
+      ARBITRAGE_REFERENCE_PRICE: "1.0"
+      ARBITRAGE_BUY_THRESHOLD_BPS: "5"
+      ARBITRAGE_MIN_PROFIT_BPS: "5"
+      ARBITRAGE_FEE_BPS: "0"
+      ARBITRAGE_SLIPPAGE_BPS: "0"
+      ARBITRAGE_MIN_NOTIONAL_USD: "10"
+      ARBITRAGE_MAX_OPEN_TRANCHES: "10"
+      ARBITRAGE_MAX_BUY_PRICE: "0.9994"
+      ARBITRAGE_MIN_SELL_PRICE: "1.0"
+      ARBITRAGE_GRID_STEP: "0.0005"
+      ARBITRAGE_MIN_BUY_PRICE: "0.9900"
+      ARBITRAGE_MAX_USDT_ALLOCATION_PCT: "1.0"
+      BINANCE_MAX_LIVE_ORDER_NOTIONAL_USD: "0"
+      ARBITRAGE_AUTO_TRADE_ENABLED: "true"
+      ARBITRAGE_AUTO_TRADE_INTERVAL_SECONDS: "5"
+      TELEGRAM_ALERT_ENABLED: "true"
+      TELEGRAM_BOT_TOKEN: "7952930714:AAH8EAUhvGLxPAudo-jSTYENAX9lkWldTsA"
+      TELEGRAM_CHAT_ID: "6963606900"
+      TELEGRAM_TIMEOUT_SECONDS: "10"
+
+      ADMIN_AUTH_ENABLED: "true"
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: sGSdHXpfQtQp1M2bHoF95Ntt
+      ADMIN_PASSWORD_HASH: ""
+      ADMIN_SECRET_KEY: aR0dlEhbcJVHXsS9m5hh66ix91MUczvp-PHT8Z5NeYxBZrC9HiEnjAwk59pmqKJu
+      ADMIN_SESSION_TTL_SECONDS: "28800"
+      ADMIN_SECURE_COOKIE: "false"
+      ADMIN_CAPTCHA_ENABLED: "true"
+      ADMIN_CAPTCHA_TTL_SECONDS: "300"
+      ADMIN_CAPTCHA_LENGTH: "4"
+      ADMIN_CAPTCHA_ALPHABET: "23456789"
+
+      BINANCE_SYMBOL: USDTUSD
+      BINANCE_BASE_ASSET: USDT
+      BINANCE_QUOTE_ASSET: USD
+      BINANCE_INVERT_PRICE: "false"
+      BINANCE_REST_URL: https://api.binance.com
+      BINANCE_WS_URL: wss://data-stream.binance.vision/ws
+      BINANCE_WS_ENABLED: "true"
+      BINANCE_WS_MAX_CONNECTION_SECONDS: "85500"
+      BINANCE_WS_MESSAGE_TIMEOUT_SECONDS: "15"
+      BINANCE_LIVE_TRADING: "true"
+      BINANCE_API_KEY: "i4mk2R6FKHMcwajBiItIHhEE8YEdEj1ziO1b4MZPpcibmugQtbN9Wjl2fw8XPem4"
+      BINANCE_API_SECRET: "wwH9PsDSGfN6da1DjYByNdLxsRfJSMZG0YUQl1KVtB2EfAY8ETntzES5w1Wjropx"
+
+      CCXT_ENABLED: "true"
+      CCXT_EXCHANGE_ID: binance
+      CCXT_SYMBOL: USDT/USD
+      CCXT_TIMEOUT_MS: "10000"
+
+      REDIS_URL: redis://:arbitrage_redis_password@redis:6379/0
+      DATABASE_URL: postgresql://arbitrage:arbitrage_dev_password@postgres:5432/arbitrage
+    ports:
+      - "8000:8000"
+    volumes:
+      - arbitrage_data:/app/data
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - arbitrage_net
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  redis:
+    image: redis:7-alpine
+    container_name: open-arbitrage-redis
+    restart: unless-stopped
+    command:
+      - redis-server
+      - --requirepass
+      - arbitrage_redis_password
+      - --appendonly
+      - "yes"
+      - --appendfsync
+      - everysec
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - arbitrage_net
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "arbitrage_redis_password", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: open-arbitrage-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: arbitrage
+      POSTGRES_PASSWORD: arbitrage_dev_password
+      POSTGRES_DB: arbitrage
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - arbitrage_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U arbitrage -d arbitrage"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  docs:
+    image: node:20-bookworm-slim
+    container_name: open-arbitrage-docs
+    restart: unless-stopped
+    working_dir: /docs
+    command: sh -lc "if [ ! -x node_modules/.bin/mintlify ]; then npm install --include=optional --no-audit --no-fund; fi && npm run dev"
+    environment:
+      NPM_CONFIG_REGISTRY: https://registry.npmmirror.com
+      PUPPETEER_SKIP_DOWNLOAD: "true"
+      PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./mintlify-docs:/docs
+      - docs_node_modules:/docs/node_modules
+    networks:
+      - arbitrage_net
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3000').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))\""]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+volumes:
+  arbitrage_data:
+  redis_data:
+  postgres_data:
+  docs_node_modules:
+
+networks:
+  arbitrage_net:
+    driver: bridge

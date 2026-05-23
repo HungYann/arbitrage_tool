@@ -1,0 +1,90 @@
+---
+title: "Codex plugin and MCP"
+description: "Operate the arbitrage tool from Codex through a local plugin and MCP server."
+---
+
+The repository includes a local Codex plugin at:
+
+```text
+/Users/liuhongyang/Desktop/content/plugins/open-arbitrage-tool
+```
+
+It makes the arbitrage tool available to Codex through two surfaces:
+
+- A skill with safe operating procedures.
+- An MCP server with structured tools for state, config, ticks, logs, reset, and admin summary.
+
+## Plugin files
+
+| Path | Purpose |
+| --- | --- |
+| `.codex-plugin/plugin.json` | Plugin metadata and interface information |
+| `.mcp.json` | MCP server registration |
+| `skills/open-arbitrage-tool/SKILL.md` | Codex operating instructions |
+| `scripts/open_arbitrage_mcp.py` | Python MCP stdio server |
+
+## MCP connection behavior
+
+The MCP server first tries to connect to:
+
+```text
+http://127.0.0.1:8000
+```
+
+If FastAPI is running, MCP operations use the same API state and logs as the web dashboard. If FastAPI is not running, the MCP server reports unavailable and refuses trading/data tools. Strategy execution belongs to the Python web service, not the MCP bridge.
+
+## MCP tools
+
+| Tool | Purpose |
+| --- | --- |
+| `arbitrage_health` | Check FastAPI vs local fallback connection |
+| `arbitrage_get_state` | Read balances, realized profit, and open tranches |
+| `arbitrage_get_balance` | Query current balances through the web service |
+| `arbitrage_get_binance_quote` | Fetch configured Binance symbol bid/ask quote |
+| `arbitrage_get_binance_balance` | Fetch configured Binance base/quote balances |
+| `arbitrage_get_config` | Read strategy parameters |
+| `arbitrage_update_config` | Update parameters and reset paper state |
+| `arbitrage_evaluate_tick` | Evaluate a price without mutating state |
+| `arbitrage_execute_tick` | Execute a paper tick |
+| `arbitrage_submit_trade` | Submit a trade request; the web service executes strategy |
+| `arbitrage_submit_binance_trade` | Submit a Binance-backed trade request through the service |
+| `arbitrage_get_logs` | Read recent operation logs |
+| `arbitrage_reset` | Reset paper portfolio |
+| `arbitrage_admin_summary` | Return dashboard metrics and recent events |
+
+## Manual MCP smoke test
+
+From the plugin directory:
+
+```bash
+cd /Users/liuhongyang/Desktop/content/plugins/open-arbitrage-tool
+printf '%s\n' \
+  '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' \
+  '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"arbitrage_health","arguments":{}}}' \
+  | python3 scripts/open_arbitrage_mcp.py
+```
+
+Expected result: `connection` is `fastapi` when the API is running, otherwise `unavailable`.
+
+## Safe usage
+
+<Warning>
+  The plugin can execute paper ticks and update strategy parameters. In this prototype, updating parameters resets paper state.
+</Warning>
+
+Recommended Codex flow:
+
+<Steps>
+  <Step title="Check connection">
+    Call `arbitrage_health`.
+  </Step>
+  <Step title="Review state">
+    Call `arbitrage_get_state` and `arbitrage_get_logs`.
+  </Step>
+  <Step title="Evaluate before execution">
+    Call `arbitrage_evaluate_tick` before `arbitrage_execute_tick` when testing a price.
+  </Step>
+  <Step title="Summarize operator data">
+    Call `arbitrage_admin_summary` to inspect dashboard metrics from Codex.
+  </Step>
+</Steps>
