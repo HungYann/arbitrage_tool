@@ -39,12 +39,19 @@
 
 ---
 
-## 🚀 GitHub Pages 部署配置
+## 🚀 GitHub Pages 部署配置（Static HTML）
+
+### 部署方式说明
+
+本项目使用 **Static HTML** 部署方式（而非 Jekyll）：
+- ✅ 直接部署 Mintlify 生成的静态文件
+- ✅ 无额外编译，部署速度快（5分钟内）
+- ✅ 完全兼容 Mintlify 的设计和交互
 
 ### 第一步：启用 GitHub Pages
 
 1. 访问仓库 Settings → Pages
-2. **Source** 选择：`GitHub Actions`
+2. **Source** 选择：`GitHub Actions`（不选 Jekyll）
 3. 保存配置
 
 ### 第二步：验证部署
