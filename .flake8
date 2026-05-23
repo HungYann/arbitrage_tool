@@ -1,0 +1,19 @@
+[flake8]
+max-line-length = 120
+exclude =
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    env,
+    node_modules,
+    mintlify-docs,
+    .pytest_cache,
+    build,
+    dist
+ignore =
+    E203,
+    W503,
+    E501
+per-file-ignores =
+    __init__.py:F401
