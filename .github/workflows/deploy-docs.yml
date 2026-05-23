@@ -50,24 +50,23 @@ jobs:
         working-directory: mintlify-docs
         run: |
           echo "🔨 Building Mintlify documentation..."
-          # Mintlify generates output in .mintlify/ directory (or similar)
-          # The dev server builds it on-demand, we ensure it's available
-          mkdir -p .mintlify || true
-          echo "✅ Build directory prepared"
+          npx mintlify build
+          echo "✅ Documentation built successfully"
 
       - name: Verify build output
         run: |
-          if [ -d "mintlify-docs/.mintlify" ]; then
-            echo "✅ Found .mintlify directory"
-            ls -la mintlify-docs/.mintlify/ | head -20
+          if [ -d "mintlify-docs/out" ]; then
+            echo "✅ Found output directory"
+            ls -la mintlify-docs/out/ | head -20
           else
-            echo "⚠️ .mintlify directory not found, will serve mintlify-docs root"
+            echo "❌ Build output directory not found"
+            exit 1
           fi
 
       - name: Upload artifact to GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'mintlify-docs'
+          path: 'mintlify-docs/out'
           name: 'github-pages'
 
   deploy:
