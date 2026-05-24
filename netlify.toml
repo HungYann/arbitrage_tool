@@ -1,6 +1,6 @@
 [build]
-# Build command - use pre-built documentation
-command = "cp -r docs public && echo 'Documentation ready for deployment'"
+# Build command - use npm build script for Mintlify export
+command = "cd mintlify-docs && npm install && npm run build && ls -la && ([ -d .mintlify ] && cp -r .mintlify ../public || [ -d dist ] && cp -r dist ../public || cp -r . ../public && echo 'Using source directory as fallback')"
 
 # Directory to publish
 publish = "public"

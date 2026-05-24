@@ -1,7 +1,9 @@
 {
   "scripts": {
     "dev": "mintlify dev --host 0.0.0.0 --port 3000",
-    "broken-links": "mintlify broken-links"
+    "build": "mintlify export",
+    "broken-links": "mintlify broken-links",
+    "validate": "mintlify validate"
   },
   "devDependencies": {
     "mintlify": "4.2.565"
