@@ -1,0 +1,32 @@
+[build]
+# Build command
+command = "cd mintlify-docs && npm install && npm run dev"
+
+# Directory to publish (the public directory)
+publish = "mintlify-docs"
+
+# Node version
+NODE_VERSION = "18.17.0"
+
+[build.environment]
+# Skip Puppeteer downloads for faster builds
+PUPPETEER_SKIP_DOWNLOAD = "true"
+PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = "true"
+NODE_VERSION = "18.17.0"
+
+# Redirect all requests to index.html for client-side routing (if needed)
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
+
+# Set cache headers
+[[headers]]
+for = "/*"
+[headers.values]
+Cache-Control = "max-age=3600, s-maxage=3600"
+
+[[headers]]
+for = "/assets/*"
+[headers.values]
+Cache-Control = "max-age=31536000, immutable"
