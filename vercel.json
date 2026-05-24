@@ -1,9 +1,9 @@
 {
-  "buildCommand": "cd mintlify-docs && npm install && npm run build 2>/dev/null || echo 'Mintlify build'",
-  "outputDirectory": "mintlify-docs",
-  "installCommand": "npm install",
+  "buildCommand": "echo 'Static documentation ready'",
+  "outputDirectory": "docs",
+  "installCommand": "npm install -g mintlify --no-audit",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- mintlify-docs/ || exit 0",
   "env": {
-    "PUPPETEER_SKIP_DOWNLOAD": "true",
-    "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD": "true"
+    "NODE_VERSION": "18.17.0"
   }
 }
