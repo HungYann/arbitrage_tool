@@ -1,7 +1,40 @@
 {
-  "buildCommand": "bash -c 'cp -r mintlify-docs/* docs/ && echo \"Documentation synced to docs/\"'",
-  "outputDirectory": "docs",
+  "buildCommand": "cd mintlify-docs && npm install && npm run build",
+  "outputDirectory": "mintlify-docs/.mintlify",
+  "nodeVersion": "20.x",
   "env": {
-    "NODE_VERSION": "18.17.0"
-  }
+    "NODE_VERSION": "20.17.0"
+  },
+  "functions": {
+    "api/**/*.ts": {
+      "memory": 3008,
+      "maxDuration": 60
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
+    }
+  ]
 }
