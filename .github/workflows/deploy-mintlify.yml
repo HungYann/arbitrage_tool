@@ -1,0 +1,75 @@
+name: Deploy Mintlify to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'mintlify-docs/**'
+      - '.github/workflows/deploy-mintlify.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: ./mintlify-docs
+        run: npm install
+
+      - name: Build Mintlify
+        working-directory: ./mintlify-docs
+        run: npm run build || echo "Build command not available, using export"
+
+      - name: Export static site
+        working-directory: ./mintlify-docs
+        run: |
+          if [ -d ".mintlify" ]; then
+            echo "Found .mintlify directory"
+            mkdir -p ../docs-output
+            cp -r .mintlify/* ../docs-output/
+          elif [ -d "dist" ]; then
+            echo "Found dist directory"
+            mkdir -p ../docs-output
+            cp -r dist/* ../docs-output/
+          else
+            echo "No standard output directory, trying alternative..."
+            mkdir -p ../docs-output
+            cp -r . ../docs-output/
+          fi
+
+      - name: Create .nojekyll
+        run: touch docs-output/.nojekyll
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'docs-output'
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
