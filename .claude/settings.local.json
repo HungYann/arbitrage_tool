@@ -3,7 +3,28 @@
     "allow": [
       "Bash(git init *)",
       "Bash(git config *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git check-ignore *)",
+      "Bash(cat)",
+      "Read(//tmp/**)",
+      "Bash(git branch *)",
+      "Bash(git push *)",
+      "Bash(cat > *)",
+      "Bash(git commit *)",
+      "Bash(git pull *)",
+      "Bash(git stash *)",
+      "Bash(git fetch *)",
+      "Bash(git rebase *)",
+      "Bash(git restore *)",
+      "Bash(ls -la get-started/)",
+      "Bash(ls -la core-concepts/)",
+      "Bash(ls -la guides/)",
+      "Bash(ls -la reference/)",
+      "Bash(ls -la index.mdx openapi.json)",
+      "Bash(npm ci *)",
+      "Bash(cat /Users/liuhongyang/.npm/_logs/2026-05-23T23_58_40_701Z-debug.log | tail -50)",
+      "Bash(npm install *)",
+      "Bash(brew install *)"
     ]
   }
 }

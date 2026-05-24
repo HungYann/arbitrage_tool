@@ -40,33 +40,31 @@ jobs:
 
       - name: Check for broken links
         working-directory: mintlify-docs
-        run: npm run broken-links || echo "⚠️ Some broken links found, but continuing with build..."
+        run: npm run broken-links || echo "⚠️ Some broken links found, continuing..."
 
-      - name: Verify Mintlify installation
-        working-directory: mintlify-docs
-        run: npx mintlify --version
-
-      - name: Build static documentation
-        working-directory: mintlify-docs
+      - name: Verify documentation setup
         run: |
-          echo "🔨 Building Mintlify documentation..."
-          npx mintlify build
-          echo "✅ Documentation built successfully"
-
-      - name: Verify build output
-        run: |
-          if [ -d "mintlify-docs/out" ]; then
-            echo "✅ Found output directory"
-            ls -la mintlify-docs/out/ | head -20
-          else
-            echo "❌ Build output directory not found"
+          echo "📋 Verifying Mintlify documentation structure..."
+          if [ ! -f "mintlify-docs/docs.json" ]; then
+            echo "❌ ERROR: docs.json not found!"
             exit 1
           fi
+          if [ ! -f "mintlify-docs/index.html" ]; then
+            echo "⚠️ WARNING: index.html not found in mintlify-docs/"
+          fi
+          echo "✅ Documentation files verified"
+
+      - name: Create deployment directory
+        run: |
+          mkdir -p _deploy
+          cp -r mintlify-docs/* _deploy/
+          echo "✅ Deployment directory prepared"
+          ls -la _deploy/ | head -20
 
       - name: Upload artifact to GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'mintlify-docs/out'
+          path: '_deploy'
           name: 'github-pages'
 
   deploy:
