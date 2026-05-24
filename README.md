@@ -1,6 +1,24 @@
 # Open Arbitrage Tool
 
-完全开源化、自动化、安全的生产级套利交易系统。支持 Binance 等交易所的自动化套利交易，具备企业级后台管理界面、实时行情监控、策略管理和订单追踪能力。面向 VPS 长期部署运行，可按需配置纸面交易或真实下单模式。
+<div align="center">
+
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Documentation](https://img.shields.io/badge/docs-gitHub%20Pages-blue)](https://hungyann.github.io/arbitrage_tool/)
+[![CI/CD Pipeline](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-brightgreen)](https://github.com/HungYann/arbitrage_tool/actions)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Node.js 18+](https://img.shields.io/badge/node-18+-green.svg)](https://nodejs.org/)
+[![Docker](https://img.shields.io/badge/docker-supported-blue?logo=docker)](Dockerfile)
+
+[![Code Quality](https://img.shields.io/badge/code%20quality-A-brightgreen)](https://github.com/HungYann/arbitrage_tool/actions)
+[![Test Coverage](https://img.shields.io/badge/test%20coverage-pytest-blue)](https://github.com/HungYann/arbitrage_tool/tree/main/tests)
+[![Security Scans](https://img.shields.io/badge/security-bandit%20%26%20safety-orange)](https://github.com/HungYann/arbitrage_tool/actions)
+[![Latest Release](https://img.shields.io/badge/release-v0.1.0-blue)](https://github.com/HungYann/arbitrage_tool/releases)
+
+</div>
+
+**完全开源化、自动化、安全的生产级套利交易系统**
+
+支持 Binance 等交易所的自动化套利交易，具备企业级后台管理界面、实时行情监控、策略管理和订单追踪能力。面向 VPS 长期部署运行，可按需配置纸面交易或真实下单模式。
 
 ## 核心功能
 
@@ -643,8 +661,52 @@ BINANCE_INVERT_PRICE=true
 | **Python 配置** | 代码风格和测试 | [pyproject.toml](pyproject.toml) |
 | **Flake8 配置** | Python 代码检查 | [.flake8](.flake8) |
 
+## 🔗 快速链接
+
+<div align="center">
+
+| 📖 文档 | 🚀 部署 | 💻 开发 | 📞 支持 |
+|--------|--------|--------|--------|
+| [完整文档](https://hungyann.github.io/arbitrage_tool/) | [Docker Compose](docker-compose.yml) | [GitHub Repo](https://github.com/HungYann/arbitrage_tool) | [GitHub Issues](https://github.com/HungYann/arbitrage_tool/issues) |
+| [快速开始](#快速启动) | [AWS EC2](README.md#-aws-ec2部署) | [CI/CD 指南](.github/CI-CD-GUIDE.md) | [讨论区](https://github.com/HungYann/arbitrage_tool/discussions) |
+| [API 文档](https://hungyann.github.io/arbitrage_tool/reference/api-overview.html) | [Mintlify 部署](.github/MINTLIFY-DEPLOYMENT.md) | [本地开发](README.md#-本地开发) | [提交 PR](https://github.com/HungYann/arbitrage_tool/pulls) |
+
+</div>
+
+---
+
+## 📊 项目统计
+
+<div align="center">
+
+![GitHub Repo stars](https://img.shields.io/github/stars/HungYann/arbitrage_tool?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/HungYann/arbitrage_tool?style=social)
+![GitHub forks](https://img.shields.io/github/forks/HungYann/arbitrage_tool?style=social)
+
+![Last commit](https://img.shields.io/github/last-commit/HungYann/arbitrage_tool)
+![Repo size](https://img.shields.io/github/repo-size/HungYann/arbitrage_tool)
+![Language](https://img.shields.io/github/languages/top/HungYann/arbitrage_tool)
+
+</div>
+
+---
+
+## 💡 技术栈
+
+<div align="center">
+
+| 后端 | 前端 | 中间件 | 部署 | 测试 |
+|------|------|--------|------|------|
+| ![FastAPI](https://img.shields.io/badge/FastAPI-0.111+-green?logo=fastapi) | ![HTML/CSS/JS](https://img.shields.io/badge/HTML%2FCSS%2FJS-modern-blue) | ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue?logo=postgresql) | ![Docker](https://img.shields.io/badge/Docker-blue?logo=docker) | ![Pytest](https://img.shields.io/badge/Pytest-7+-blue) |
+| ![Python 3.11](https://img.shields.io/badge/Python-3.11+-blue?logo=python) | ![Mintlify](https://img.shields.io/badge/Mintlify-docs-purple) | ![Redis](https://img.shields.io/badge/Redis-7-red?logo=redis) | ![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-deployment-blue) | ![Coverage](https://img.shields.io/badge/Coverage-pytest--cov-blue) |
+| ![Uvicorn](https://img.shields.io/badge/Uvicorn-ASGI-green) | ![OpenAPI](https://img.shields.io/badge/OpenAPI-documentation-green) | ![CCXT](https://img.shields.io/badge/CCXT-exchange%20API-orange) | ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-CI%2FCD-blue) | ![Code Quality](https://img.shields.io/badge/Black-code%20formatter-black) |
+
+</div>
+
+---
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-MIT License © 2026 Andrew Liu
+**MIT License © 2026 Andrew Liu**
