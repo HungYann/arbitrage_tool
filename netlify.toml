@@ -1,6 +1,6 @@
 [build]
-# Build command - use mintlify build for production
-command = "cd mintlify-docs && npm install && npx mintlify build"
+# Build command - use mintlify export for production static site
+command = "cd mintlify-docs && npm install && npx mintlify export"
 
 # Directory to publish (Mintlify build output)
 publish = "mintlify-docs/.mintlify"
