@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Open Arbitrage Tool - Documentation</title>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -14,83 +13,66 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: #f5f5f5;
+            background: #ffffff;
             color: #1a1a1a;
-            line-height: 1.6;
         }
 
         header {
             background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
             color: white;
-            padding: 2rem;
+            padding: 3rem 2rem;
             text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         header h1 {
-            font-size: 2rem;
+            font-size: 2.5rem;
             margin-bottom: 0.5rem;
         }
 
         header p {
-            font-size: 1rem;
+            font-size: 1.1rem;
             opacity: 0.95;
-        }
-
-        .nav-container {
-            background: white;
-            border-bottom: 1px solid #e5e5e5;
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-content {
-            max-width: 1000px;
-            margin: 0 auto;
-            display: flex;
-            gap: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .nav-button {
-            padding: 0.5rem 1rem;
-            background: #f0f0f0;
-            border: 1px solid #e5e5e5;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            color: #0f766e;
-            font-weight: 500;
-        }
-
-        .nav-button:hover, .nav-button.active {
-            background: #0f766e;
-            color: white;
-            border-color: #0f766e;
         }
 
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 3rem 2rem;
         }
 
-        .home-page {
+        .alert {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .alert h3 {
+            color: #d97706;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert p {
+            color: #92400e;
+        }
+
+        .nav-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
+            margin-bottom: 3rem;
         }
 
         .nav-card {
-            background: white;
+            background: #f5f5f5;
             border: 2px solid #e5e5e5;
             border-radius: 0.75rem;
             padding: 1.5rem;
             transition: all 0.3s ease;
-            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
         }
 
         .nav-card:hover {
@@ -103,96 +85,40 @@
         .nav-card h3 {
             color: #0f766e;
             margin-bottom: 0.5rem;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
         }
 
         .nav-card p {
             color: #666;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             line-height: 1.5;
         }
 
-        .content {
-            background: white;
+        .links {
+            background: #f9f9f9;
             border-radius: 0.5rem;
             padding: 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            text-align: center;
         }
 
-        .content h1 {
-            color: #0f766e;
-            border-bottom: 3px solid #0f766e;
-            padding-bottom: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .content h2 {
-            color: #0f766e;
-            margin-top: 2rem;
+        .links h3 {
             margin-bottom: 1rem;
-        }
-
-        .content h3 {
             color: #0f766e;
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
         }
 
-        .content code {
-            background: #f5f5f5;
-            padding: 0.2rem 0.4rem;
-            border-radius: 0.3rem;
-            font-family: 'Courier New', monospace;
-        }
-
-        .content pre {
-            background: #f5f5f5;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            overflow-x: auto;
-            margin: 1rem 0;
-        }
-
-        .content pre code {
-            background: none;
-            padding: 0;
-            border-radius: 0;
-        }
-
-        .content ul, .content ol {
-            margin: 1rem 0 1rem 2rem;
-        }
-
-        .content li {
-            margin-bottom: 0.5rem;
-        }
-
-        .content a {
-            color: #0f766e;
+        .link-button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            margin: 0.5rem;
+            background: #0f766e;
+            color: white;
             text-decoration: none;
-            border-bottom: 1px solid #0f766e;
+            border-radius: 0.5rem;
+            transition: background 0.2s;
         }
 
-        .content a:hover {
-            background: #f0fdf9;
-        }
-
-        .content table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-        }
-
-        .content th, .content td {
-            border: 1px solid #e5e5e5;
-            padding: 0.75rem;
-            text-align: left;
-        }
-
-        .content th {
-            background: #f5f5f5;
-            color: #0f766e;
-            font-weight: bold;
+        .link-button:hover {
+            background: #0d5f5a;
         }
 
         footer {
@@ -201,18 +127,6 @@
             border-top: 1px solid #e5e5e5;
             color: #666;
             font-size: 0.9rem;
-            background: white;
-            margin-top: 2rem;
-        }
-
-        .loading {
-            text-align: center;
-            color: #0f766e;
-            padding: 2rem;
-        }
-
-        .hidden {
-            display: none;
         }
     </style>
 </head>
@@ -222,103 +136,45 @@
         <p>完全开源化、自动化、安全的生产级套利交易系统</p>
     </header>
 
-    <div class="nav-container">
-        <div class="nav-content">
-            <a href="javascript:void(0)" onclick="showHome()" class="nav-button active" id="home-btn">🏠 Home</a>
-            <a href="javascript:void(0)" onclick="loadDoc('get-started/quickstart')" class="nav-button">🚀 Quick Start</a>
-            <a href="javascript:void(0)" onclick="loadDoc('guides/run-locally')" class="nav-button">🛠️ Guides</a>
-            <a href="javascript:void(0)" onclick="loadDoc('reference/api-overview')" class="nav-button">📡 API</a>
-            <a href="https://github.com/HungYann/arbitrage_tool" target="_blank" class="nav-button">💻 GitHub</a>
-        </div>
-    </div>
-
     <div class="container">
-        <div id="home-page" class="home-page">
-            <div class="nav-card" onclick="loadDoc('get-started/quickstart')">
+        <div class="alert">
+            <h3>⚙️ Documentation Status</h3>
+            <p>This is the documentation hub for the Open Arbitrage Tool. Below you'll find links to all documentation sections. The full interactive documentation is available via the links below.</p>
+        </div>
+
+        <div class="nav-grid">
+            <a href="get-started/quickstart.html" class="nav-card">
                 <h3>🚀 Quick Start</h3>
                 <p>Get up and running in minutes with a step-by-step guide to deploy and configure the arbitrage bot.</p>
-            </div>
+            </a>
 
-            <div class="nav-card" onclick="loadDoc('core-concepts/strategy')">
+            <a href="core-concepts/strategy.html" class="nav-card">
                 <h3>📖 Core Concepts</h3>
                 <p>Learn about the trading strategy, profit model, and risk controls that power the system.</p>
-            </div>
+            </a>
 
-            <div class="nav-card" onclick="loadDoc('guides/run-locally')">
+            <a href="guides/run-locally.html" class="nav-card">
                 <h3>🛠️ Guides</h3>
                 <p>Detailed guides for local development, VPS deployment, and bot operation.</p>
-            </div>
+            </a>
 
-            <div class="nav-card" onclick="loadDoc('reference/api-overview')">
+            <a href="reference/api-overview.html" class="nav-card">
                 <h3>📡 API Reference</h3>
                 <p>Complete API documentation and endpoint reference for integration.</p>
-            </div>
+            </a>
         </div>
 
-        <div id="content" class="content hidden"></div>
-        <div id="loading" class="loading hidden">📖 Loading documentation...</div>
+        <div class="links">
+            <h3>View Full Documentation</h3>
+            <p>For the full interactive documentation experience with search functionality, please visit:</p>
+            <a href="https://hungyann.github.io/arbitrage_tool/" class="link-button">View on GitHub Pages</a>
+            <a href="https://github.com/HungYann/arbitrage_tool" class="link-button">GitHub Repository</a>
+        </div>
     </div>
 
     <footer>
         <p>Open Arbitrage Tool © 2026 Andrew Liu - MIT License</p>
         <p><a href="https://github.com/HungYann/arbitrage_tool" style="color: #0f766e;">GitHub</a> • <a href="https://github.com/HungYann/arbitrage_tool/blob/main/LICENSE" style="color: #0f766e;">License</a></p>
     </footer>
-
-    <script>
-        const DOCS_BASE = './';
-
-        function showHome() {
-            document.getElementById('home-page').classList.remove('hidden');
-            document.getElementById('content').classList.add('hidden');
-            document.getElementById('loading').classList.add('hidden');
-            updateNav('home-btn');
-        }
-
-        async function loadDoc(docPath) {
-            const contentDiv = document.getElementById('content');
-            const homeDiv = document.getElementById('home-page');
-            const loadingDiv = document.getElementById('loading');
-
-            homeDiv.classList.add('hidden');
-            loadingDiv.classList.remove('hidden');
-
-            try {
-                const response = await fetch(`${DOCS_BASE}${docPath}.mdx`);
-                if (!response.ok) throw new Error('File not found');
-
-                const markdown = await response.text();
-
-                // Remove front matter (YAML)
-                let content = markdown;
-                if (content.startsWith('---')) {
-                    const endIndex = content.indexOf('---', 3);
-                    if (endIndex !== -1) {
-                        content = content.substring(endIndex + 3);
-                    }
-                }
-
-                contentDiv.innerHTML = marked.parse(content);
-                contentDiv.classList.remove('hidden');
-                loadingDiv.classList.add('hidden');
-                window.scrollTo(0, 0);
-                updateNav(`${docPath.split('/')[0]}-btn`);
-            } catch (error) {
-                contentDiv.innerHTML = `<h2>❌ Document Not Found</h2><p>Could not load: ${docPath}.mdx</p><p><a href="javascript:showHome()">← Back to Home</a></p>`;
-                contentDiv.classList.remove('hidden');
-                loadingDiv.classList.add('hidden');
-            }
-        }
-
-        function updateNav(activeId) {
-            document.querySelectorAll('.nav-button').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            const activeBtn = document.getElementById(activeId) || document.getElementById('home-btn');
-            activeBtn.classList.add('active');
-        }
-
-        // Show home on load
-        showHome();
-    </script>
 </body>
 </html>
