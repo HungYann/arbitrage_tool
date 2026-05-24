@@ -1,7 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "echo '✅ Static documentation ready'",
+  "buildCommand": "echo 'Static documentation ready'",
   "outputDirectory": "docs",
+  "installCommand": "echo 'No install needed'",
   "env": {
     "NODE_VERSION": "18.17.0"
   }
