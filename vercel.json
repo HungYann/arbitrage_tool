@@ -1,9 +1,18 @@
 {
   "version": 2,
-  "buildCommand": "echo 'Static documentation ready'",
-  "outputDirectory": "docs",
-  "installCommand": "echo 'No install needed'",
+  "buildCommand": "cd mintlify-docs && npm install && npm run dev",
+  "outputDirectory": "mintlify-docs",
+  "installCommand": "echo 'Dependencies installed during build'",
   "env": {
-    "NODE_VERSION": "18.17.0"
+    "NODE_VERSION": "18.17.0",
+    "PUPPETEER_SKIP_DOWNLOAD": "true",
+    "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD": "true"
+  },
+  "regions": ["iad1"],
+  "functions": {
+    "api/**/*.js": {
+      "memory": 3008,
+      "maxDuration": 30
+    }
   }
 }
