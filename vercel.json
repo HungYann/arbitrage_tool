@@ -1,10 +1,6 @@
 {
   "buildCommand": "cd mintlify-docs && npm install && npm run build",
   "outputDirectory": "mintlify-docs/.mintlify",
-  "nodeVersion": "20.x",
-  "env": {
-    "NODE_VERSION": "20.17.0"
-  },
   "functions": {
     "api/**/*.ts": {
       "memory": 3008,
