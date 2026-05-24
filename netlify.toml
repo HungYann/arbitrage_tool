@@ -1,18 +1,18 @@
 [build]
-# Build command
-command = "cd mintlify-docs && npm install && npm run dev"
+# Build command - use mintlify build for production
+command = "cd mintlify-docs && npm install && npx mintlify build"
 
-# Directory to publish (the public directory)
-publish = "mintlify-docs"
+# Directory to publish (Mintlify build output)
+publish = "mintlify-docs/.mintlify"
 
-# Node version
-NODE_VERSION = "18.17.0"
+# Node version (Mintlify requires 20.17+)
+NODE_VERSION = "20.17.0"
 
 [build.environment]
 # Skip Puppeteer downloads for faster builds
 PUPPETEER_SKIP_DOWNLOAD = "true"
 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = "true"
-NODE_VERSION = "18.17.0"
+NODE_VERSION = "20.17.0"
 
 # Redirect all requests to index.html for client-side routing (if needed)
 [[redirects]]
