@@ -1,0 +1,18 @@
+{
+  "name": "open-arbitrage-tool",
+  "version": "0.1.0",
+  "description": "完全开源化、自动化、安全的生产级套利交易系统",
+  "scripts": {
+    "build": "echo 'Static site ready'",
+    "dev": "echo 'Static site - no dev server needed'"
+  },
+  "keywords": [
+    "arbitrage",
+    "trading",
+    "bot",
+    "binance",
+    "cryptocurrency"
+  ],
+  "author": "Andrew Liu",
+  "license": "MIT"
+}

@@ -1,8 +1,7 @@
 {
-  "buildCommand": "echo 'Static documentation ready'",
+  "version": 2,
+  "buildCommand": "echo '✅ Static documentation ready'",
   "outputDirectory": "docs",
-  "installCommand": "npm install -g mintlify --no-audit",
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- mintlify-docs/ || exit 0",
   "env": {
     "NODE_VERSION": "18.17.0"
   }
