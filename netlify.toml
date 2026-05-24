@@ -1,9 +1,9 @@
 [build]
-# Build command - use mintlify export for production static site
-command = "cd mintlify-docs && npm install && npx mintlify export"
+# Build command - use pre-built documentation
+command = "cp -r docs public && echo 'Documentation ready for deployment'"
 
-# Directory to publish (Mintlify build output)
-publish = "mintlify-docs/.mintlify"
+# Directory to publish
+publish = "public"
 
 # Node version (Mintlify requires 20.17+)
 NODE_VERSION = "20.17.0"
