@@ -31,12 +31,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: 'mintlify-docs/package-lock.json'
 
       - name: Install dependencies
         working-directory: mintlify-docs
-        run: npm ci
+        run: |
+          echo "📦 Installing Node.js dependencies..."
+          npm install --no-audit --no-fund
+          echo "✅ Dependencies installed"
 
       - name: Check for broken links
         working-directory: mintlify-docs
@@ -56,16 +57,35 @@ jobs:
 
       - name: Create deployment directory
         run: |
+          echo "🔨 Preparing deployment package..."
           mkdir -p _deploy
-          cp -r mintlify-docs/* _deploy/
+
+          # Copy all documentation files
+          cp -r mintlify-docs/index.html _deploy/ 2>/dev/null || echo "⚠️ index.html not found"
+          cp -r mintlify-docs/docs.json _deploy/ 2>/dev/null || true
+          cp -r mintlify-docs/openapi.json _deploy/ 2>/dev/null || true
+          cp -r mintlify-docs/*.mdx _deploy/ 2>/dev/null || true
+
+          # Copy documentation directories
+          [ -d "mintlify-docs/get-started" ] && cp -r mintlify-docs/get-started _deploy/
+          [ -d "mintlify-docs/core-concepts" ] && cp -r mintlify-docs/core-concepts _deploy/
+          [ -d "mintlify-docs/guides" ] && cp -r mintlify-docs/guides _deploy/
+          [ -d "mintlify-docs/reference" ] && cp -r mintlify-docs/reference _deploy/
+          [ -d "mintlify-docs/assets" ] && cp -r mintlify-docs/assets _deploy/
+
           echo "✅ Deployment directory prepared"
-          ls -la _deploy/ | head -20
+          echo ""
+          echo "📋 Deployment package contents:"
+          find _deploy -type f | sort
+          echo ""
+          echo "📊 Total files: $(find _deploy -type f | wc -l)"
 
       - name: Upload artifact to GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
           path: '_deploy'
           name: 'github-pages'
+          retention-days: 1
 
   deploy:
     needs: build
@@ -84,6 +104,17 @@ jobs:
 
       - name: Deployment Summary
         run: |
-          echo "📚 Documentation deployed successfully!"
-          echo "📖 URL: ${{ steps.deployment.outputs.page_url }}"
-          echo "⏱️  Deployment completed at $(date)"
+          echo "✅ Deployment completed!"
+          echo ""
+          echo "📊 Deployment Information:"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📖 Documentation URL:"
+          echo "   ${{ steps.deployment.outputs.page_url }}"
+          echo ""
+          echo "🔗 Direct links:"
+          echo "   Home: ${{ steps.deployment.outputs.page_url }}"
+          echo "   API: ${{ steps.deployment.outputs.page_url }}reference/api-overview.html"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "⏱️  Deployment time: $(date)"
+          echo "✨ Visit your documentation in 1-2 minutes"

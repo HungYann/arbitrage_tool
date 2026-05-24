@@ -25,7 +25,8 @@
       "Bash(cat /Users/liuhongyang/.npm/_logs/2026-05-23T23_58_40_701Z-debug.log | tail -50)",
       "Bash(npm install *)",
       "Bash(brew install *)",
-      "Bash(npm list *)"
+      "Bash(npm list *)",
+      "Bash(git rm *)"
     ]
   }
 }
