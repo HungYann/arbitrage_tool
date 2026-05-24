@@ -1,0 +1,23 @@
+---
+title: "FAQ"
+description: "Common questions about the arbitrage tool."
+---
+
+<AccordionGroup>
+  <Accordion title="Does the current tool place real orders?">
+    No. The current implementation is a paper-trading API and strategy engine.
+  </Accordion>
+  <Accordion title="Why split capital into many tranches?">
+    Tranches let the bot buy and sell inventory in small independent pieces. This avoids treating the entire account as one position.
+  </Accordion>
+  <Accordion title="Is 5 bps profit enough?">
+    Only if it is net of fees, slippage, and execution risk. The strategy calculates profit after configured fee and slippage assumptions.
+  </Accordion>
+  <Accordion title="Can it run on a VPS?">
+    Yes. Run FastAPI with uvicorn under systemd and store logs on persistent disk.
+  </Accordion>
+  <Accordion title="How should live API keys be handled?">
+    Use environment variables or a secret manager. Never commit keys. Disable withdrawal permission.
+  </Accordion>
+</AccordionGroup>
+

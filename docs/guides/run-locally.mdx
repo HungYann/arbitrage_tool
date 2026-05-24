@@ -1,0 +1,49 @@
+---
+title: "Run locally"
+description: "Run the API and verify a full buy/sell paper cycle."
+---
+
+## Start from a clean shell
+
+```bash
+cd /Users/liuhongyang/Desktop/content/arbitrage_tool
+source .venv/bin/activate
+uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+## Verify health
+
+```bash
+curl http://127.0.0.1:8000/health
+```
+
+## Reset state
+
+```bash
+curl -X POST http://127.0.0.1:8000/reset
+```
+
+## Execute a paper buy
+
+```bash
+curl -X POST http://127.0.0.1:8000/tick \
+  -H 'Content-Type: application/json' \
+  -d '{"price":0.9994,"execute":true}'
+```
+
+## Execute a paper sell
+
+```bash
+curl -X POST http://127.0.0.1:8000/tick \
+  -H 'Content-Type: application/json' \
+  -d '{"price":1.0003,"execute":true}'
+```
+
+## Inspect final state
+
+```bash
+curl http://127.0.0.1:8000/state
+```
+
+You should see no open tranches and a small realized paper profit if the sell tick cleared the configured threshold.
+

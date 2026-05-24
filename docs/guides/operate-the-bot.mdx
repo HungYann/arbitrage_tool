@@ -1,0 +1,42 @@
+---
+title: "Operate the bot"
+description: "Daily operational workflow for paper trading and future live trading."
+---
+
+## Daily workflow
+
+<Steps>
+  <Step title="Check service health">
+    Call `GET /health` and verify process uptime.
+  </Step>
+  <Step title="Review state">
+    Call `GET /state` and inspect USD balance, USDT balance, realized profit, and open tranches.
+  </Step>
+  <Step title="Confirm automatic monitoring">
+    The service starts the quote stream and trading loop on deployment. Check `GET /auto/status` and `GET /broker/quote?source=websocket`.
+  </Step>
+  <Step title="Review logs">
+    Call `GET /logs?limit=100` and check for repeated errors or unexpected decisions.
+  </Step>
+  <Step title="Adjust config only when needed">
+    Update thresholds deliberately and record the reason.
+  </Step>
+</Steps>
+
+## What to watch
+
+- Too many open tranches means price kept falling and inventory is accumulating.
+- No sells for a long time means the exit threshold may be too high for current volatility.
+- Frequent buys and sells with tiny profit can still lose money if real fees are higher than assumed.
+- A `warming_up` WebSocket quote means the stream has started but no fresh book ticker has arrived yet.
+- Gaps in logs may indicate process restarts or storage issues.
+
+## Pause procedure
+
+For the current paper prototype:
+
+```bash
+sudo systemctl stop open-arbitrage-tool
+```
+
+For a future live broker, pause should also cancel open exchange orders and write a final state snapshot.

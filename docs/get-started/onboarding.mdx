@@ -1,0 +1,75 @@
+---
+title: "Operator onboarding"
+description: "A checklist for safely moving from local paper trading to VPS operation."
+---
+
+Use this checklist before leaving the tool running unattended.
+
+## 1. Confirm the operating mode
+
+The current prototype is paper-only. Keep the environment explicit:
+
+```bash
+export TRADING_MODE=paper
+```
+
+The health endpoint should return:
+
+```json
+{ "status": "ok", "mode": "paper" }
+```
+
+## 2. Understand the capital split
+
+Default assumptions:
+
+| Parameter | Default | Meaning |
+| --- | ---: | --- |
+| `total_capital_usd` | `30000` | Starting paper USD |
+| `tranche_count` | `10` | Number of pieces, configurable from 1 to 10 |
+| `tranche_size_usd` | `10000` | Capital per buy |
+| `strategy_mode` | `gradient` | One open tranche per buy level |
+| `max_buy_price` | `0.9994` | Hard buy ceiling |
+| `min_sell_price` | `1.0000` | Hard sell floor |
+| `grid_step` | `0.0005` | Buy-level spacing |
+| `min_profit_bps` | `5` | Sell only after net profit clears 5 bps |
+
+## 3. Run a controlled paper session
+
+<Steps>
+  <Step title="Reset state">
+    Call `POST /reset` before a clean test.
+  </Step>
+  <Step title="Trigger one buy">
+    Send a low price tick, such as `0.9994`, with `execute=true`.
+  </Step>
+  <Step title="Trigger one sell">
+    Send a high price tick, such as `1.0003`, with `execute=true`.
+  </Step>
+  <Step title="Review logs">
+    Confirm the JSONL logs include request, decision, and state snapshots.
+  </Step>
+</Steps>
+
+## 4. Prepare VPS operation
+
+- Use systemd or another process manager.
+- Write logs to persistent disk.
+- Back up configuration.
+- Disable live trading by default.
+- Add external monitoring for API uptime and process restarts.
+
+## 5. Before any live broker
+
+<Warning>
+  If you add live exchange execution, API keys should have trading permission only. Never grant withdrawal permission to an automated strategy key.
+</Warning>
+
+Required live-trading gates:
+
+- Paper trading history reviewed.
+- Fee and slippage assumptions match the exchange.
+- Minimum notional and lot-size rules are enforced.
+- Daily loss limit exists.
+- API error retry limits exist.
+- Operator can pause trading immediately.

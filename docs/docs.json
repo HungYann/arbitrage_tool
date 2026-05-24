@@ -1,0 +1,70 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Open Arbitrage Tool",
+  "description": "Onboarding and operator docs for a tranche-based USDT/USD arbitrage tool.",
+  "colors": {
+    "primary": "#0f766e",
+    "light": "#14b8a6",
+    "dark": "#0f766e"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Get Started",
+        "pages": [
+          "index",
+          "get-started/quickstart",
+          "get-started/onboarding"
+        ]
+      },
+      {
+        "group": "Core Concepts",
+        "pages": [
+          "core-concepts/strategy",
+          "core-concepts/profit-model",
+          "core-concepts/risk-controls"
+        ]
+      },
+      {
+        "group": "Guides",
+        "pages": [
+          "guides/run-locally",
+          "guides/vps-deployment",
+          "guides/operate-the-bot",
+          "guides/configuration"
+        ]
+      },
+      {
+        "group": "Reference",
+        "pages": [
+          "reference/api-overview",
+          "reference/codex-plugin",
+          "reference/event-logs",
+          "reference/faq"
+        ]
+      },
+      {
+        "group": "API Reference",
+        "openapi": "openapi.json"
+      }
+    ]
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "API overview",
+        "href": "/reference/api-overview"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Quickstart",
+      "href": "/get-started/quickstart"
+    }
+  },
+  "footer": {
+    "socials": {}
+  }
+}

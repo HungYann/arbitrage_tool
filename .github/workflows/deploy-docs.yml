@@ -1,4 +1,4 @@
-name: Deploy Mintlify Docs to GitHub Pages
+name: Deploy Docs to GitHub Pages
 
 on:
   push:
@@ -6,115 +6,85 @@ on:
       - main
     paths:
       - 'mintlify-docs/**'
+      - 'docs/**'
       - '.github/workflows/deploy-docs.yml'
-  # Allow manual trigger from Actions tab
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    name: Build Mintlify Documentation
+    name: Deploy Documentation
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      - name: Install dependencies
-        working-directory: mintlify-docs
+      - name: Verify documentation files
         run: |
-          echo "📦 Installing Node.js dependencies..."
-          npm install --no-audit --no-fund
-          echo "✅ Dependencies installed"
-
-      - name: Check for broken links
-        working-directory: mintlify-docs
-        run: npm run broken-links || echo "⚠️ Some broken links found, continuing..."
-
-      - name: Verify documentation setup
-        run: |
-          echo "📋 Verifying Mintlify documentation structure..."
-          if [ ! -f "mintlify-docs/docs.json" ]; then
-            echo "❌ ERROR: docs.json not found!"
-            exit 1
-          fi
-          if [ ! -f "mintlify-docs/index.html" ]; then
-            echo "⚠️ WARNING: index.html not found in mintlify-docs/"
-          fi
-          echo "✅ Documentation files verified"
-
-      - name: Create deployment directory
-        run: |
-          echo "🔨 Preparing deployment package..."
-          mkdir -p _deploy
-
-          # Copy all documentation files
-          cp -r mintlify-docs/index.html _deploy/ 2>/dev/null || echo "⚠️ index.html not found"
-          cp -r mintlify-docs/docs.json _deploy/ 2>/dev/null || true
-          cp -r mintlify-docs/openapi.json _deploy/ 2>/dev/null || true
-          cp -r mintlify-docs/*.mdx _deploy/ 2>/dev/null || true
-
-          # Copy documentation directories
-          [ -d "mintlify-docs/get-started" ] && cp -r mintlify-docs/get-started _deploy/
-          [ -d "mintlify-docs/core-concepts" ] && cp -r mintlify-docs/core-concepts _deploy/
-          [ -d "mintlify-docs/guides" ] && cp -r mintlify-docs/guides _deploy/
-          [ -d "mintlify-docs/reference" ] && cp -r mintlify-docs/reference _deploy/
-          [ -d "mintlify-docs/assets" ] && cp -r mintlify-docs/assets _deploy/
-
-          echo "✅ Deployment directory prepared"
+          echo "📋 Checking documentation files..."
+          [ -f "mintlify-docs/index.html" ] && echo "✅ index.html found" || echo "❌ index.html missing"
+          [ -f "mintlify-docs/docs.json" ] && echo "✅ docs.json found" || echo "❌ docs.json missing"
           echo ""
-          echo "📋 Deployment package contents:"
-          find _deploy -type f | sort
+          echo "📂 mintlify-docs contents:"
+          ls -la mintlify-docs/ | grep -E "\.html|\.json|^d" | head -15
+
+      - name: Sync documentation to docs directory
+        run: |
+          echo "🔄 Syncing documentation files..."
+          mkdir -p docs
+
+          # Copy all essential files
+          cp mintlify-docs/index.html docs/ 2>/dev/null || true
+          cp mintlify-docs/docs.json docs/ 2>/dev/null || true
+          cp mintlify-docs/openapi.json docs/ 2>/dev/null || true
+          cp mintlify-docs/*.mdx docs/ 2>/dev/null || true
+          cp mintlify-docs/favicon.svg docs/ 2>/dev/null || true
+
+          # Copy directories
+          for dir in get-started core-concepts guides reference assets operations; do
+            [ -d "mintlify-docs/$dir" ] && cp -r mintlify-docs/$dir docs/
+          done
+
+          echo "✅ Documentation synced"
           echo ""
-          echo "📊 Total files: $(find _deploy -type f | wc -l)"
+          echo "📊 docs/ directory contents:"
+          find docs -type f -not -path "*/node_modules/*" | sort
 
-      - name: Upload artifact to GitHub Pages
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '_deploy'
-          name: 'github-pages'
-          retention-days: 1
+      - name: Commit and push docs
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
 
-  deploy:
-    needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    name: Deploy to GitHub Pages
-    steps:
-      - name: Deploy static HTML to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-        with:
-          artifact_name: 'github-pages'
+          # Check if there are changes
+          if [ -n "$(git status --porcelain docs/)" ]; then
+            git add docs/
+            git commit -m "docs: update documentation from mintlify-docs [skip ci]"
+            git push origin main
+            echo "✅ Documentation committed and pushed"
+          else
+            echo "⏭️  No changes to documentation"
+          fi
 
       - name: Deployment Summary
         run: |
-          echo "✅ Deployment completed!"
-          echo ""
-          echo "📊 Deployment Information:"
+          echo "🚀 Deployment Summary"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "📖 Documentation URL:"
-          echo "   ${{ steps.deployment.outputs.page_url }}"
+          echo "📍 Documentation URL:"
+          echo "   https://hungyann.github.io/arbitrage_tool/"
           echo ""
-          echo "🔗 Direct links:"
-          echo "   Home: ${{ steps.deployment.outputs.page_url }}"
-          echo "   API: ${{ steps.deployment.outputs.page_url }}reference/api-overview.html"
+          echo "📂 Files deployed:"
+          find docs -type f -not -path "*/node_modules/*" | wc -l
+          echo ""
+          echo "⏱️  Deployment completed at: $(date)"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo ""
-          echo "⏱️  Deployment time: $(date)"
-          echo "✨ Visit your documentation in 1-2 minutes"

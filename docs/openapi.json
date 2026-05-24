@@ -1,0 +1,1028 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Open Arbitrage Tool",
+    "description": "Paper-trading FastAPI prototype for tranche-based USDT/USD arbitrage.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/admin/api/auth": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Admin Auth",
+        "operationId": "admin_auth_admin_api_auth_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Admin Auth Admin Api Auth Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/api/summary": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Admin Summary",
+        "operationId": "admin_summary_admin_api_summary_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 5000,
+              "minimum": 1,
+              "default": 500,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Admin Summary Admin Api Summary Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/api/logs": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Admin Logs",
+        "operationId": "admin_logs_admin_api_logs_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 2000,
+              "minimum": 1,
+              "default": 200,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Admin Logs Admin Api Logs Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/api/realtime": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Admin Realtime",
+        "operationId": "admin_realtime_admin_api_realtime_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Admin Realtime Admin Api Realtime Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/api/config": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Admin Config",
+        "operationId": "admin_config_admin_api_config_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Admin Config Admin Api Config Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Admin Update Config",
+        "operationId": "admin_update_config_admin_api_config_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StrategyConfigPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Admin Update Config Admin Api Config Put"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Health Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/config": {
+      "get": {
+        "summary": "Get Config",
+        "operationId": "get_config_config_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Get Config Config Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update Config",
+        "operationId": "update_config_config_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StrategyConfigPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Update Config Config Put"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/state": {
+      "get": {
+        "summary": "Get State",
+        "operationId": "get_state_state_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/balance": {
+      "get": {
+        "summary": "Get Balance",
+        "operationId": "get_balance_balance_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/broker/quote": {
+      "get": {
+        "summary": "Broker Quote",
+        "operationId": "broker_quote_broker_quote_get",
+        "parameters": [
+          {
+            "name": "source",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(auto|rest|websocket)$",
+              "default": "auto",
+              "title": "Source"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Broker Quote Broker Quote Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/broker/ws/start": {
+      "post": {
+        "summary": "Start Broker Ws",
+        "operationId": "start_broker_ws_broker_ws_start_post",
+        "parameters": [
+          {
+            "name": "force",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Force"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Start Broker Ws Broker Ws Start Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/broker/ws/stop": {
+      "post": {
+        "summary": "Stop Broker Ws",
+        "operationId": "stop_broker_ws_broker_ws_stop_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Stop Broker Ws Broker Ws Stop Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/broker/ws/status": {
+      "get": {
+        "summary": "Broker Ws Status",
+        "operationId": "broker_ws_status_broker_ws_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Broker Ws Status Broker Ws Status Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/broker/balance": {
+      "get": {
+        "summary": "Broker Balance",
+        "operationId": "broker_balance_broker_balance_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Broker Balance Broker Balance Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tick": {
+      "post": {
+        "summary": "Tick",
+        "operationId": "tick_tick_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TickRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/trade": {
+      "post": {
+        "summary": "Trade",
+        "operationId": "trade_trade_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TickRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/broker/trade": {
+      "post": {
+        "summary": "Broker Trade",
+        "operationId": "broker_trade_broker_trade_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BrokerTradeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Broker Trade Broker Trade Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/logs": {
+      "get": {
+        "summary": "Logs",
+        "operationId": "logs_logs_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "title": "Response Logs Logs Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reset": {
+      "post": {
+        "summary": "Reset",
+        "operationId": "reset_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BrokerTradeRequest": {
+        "properties": {
+          "price": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price",
+            "description": "Optional override price. If omitted, service fetches Binance quote."
+          }
+        },
+        "type": "object",
+        "title": "BrokerTradeRequest"
+      },
+      "DecisionResponse": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "price": {
+            "type": "number",
+            "title": "Price"
+          },
+          "notional_usd": {
+            "type": "number",
+            "title": "Notional Usd"
+          },
+          "tranche_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tranche Id"
+          },
+          "grid_index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grid Index"
+          },
+          "expected_profit_usd": {
+            "type": "number",
+            "title": "Expected Profit Usd"
+          },
+          "expected_profit_bps": {
+            "type": "number",
+            "title": "Expected Profit Bps"
+          },
+          "expected_gross_profit_bps": {
+            "type": "number",
+            "title": "Expected Gross Profit Bps"
+          },
+          "executed": {
+            "type": "boolean",
+            "title": "Executed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action",
+          "reason",
+          "price",
+          "notional_usd",
+          "tranche_id",
+          "grid_index",
+          "expected_profit_usd",
+          "expected_profit_bps",
+          "expected_gross_profit_bps",
+          "executed"
+        ],
+        "title": "DecisionResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "StateResponse": {
+        "properties": {
+          "usd_available": {
+            "type": "number",
+            "title": "Usd Available"
+          },
+          "usdt_available": {
+            "type": "number",
+            "title": "Usdt Available"
+          },
+          "realized_profit_usd": {
+            "type": "number",
+            "title": "Realized Profit Usd"
+          },
+          "open_tranches": {
+            "items": {
+              "$ref": "#/components/schemas/TrancheResponse"
+            },
+            "type": "array",
+            "title": "Open Tranches"
+          }
+        },
+        "type": "object",
+        "required": [
+          "usd_available",
+          "usdt_available",
+          "realized_profit_usd",
+          "open_tranches"
+        ],
+        "title": "StateResponse"
+      },
+      "StrategyConfigPayload": {
+        "properties": {
+          "total_capital_usd": {
+            "type": "number",
+            "minimum": 500.0,
+            "maximum": 200000.0,
+            "title": "Total Capital Usd",
+            "default": 30000.0
+          },
+          "tranche_count": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Tranche Count",
+            "default": 3
+          },
+          "strategy_mode": {
+            "type": "string",
+            "enum": [
+              "static",
+              "gradient"
+            ],
+            "title": "Strategy Mode",
+            "default": "gradient"
+          },
+          "reference_price": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Reference Price",
+            "default": 1.0
+          },
+          "buy_threshold_bps": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Buy Threshold Bps",
+            "default": 5.0
+          },
+          "min_profit_bps": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Min Profit Bps",
+            "default": 5.0
+          },
+          "fee_bps": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Fee Bps",
+            "default": 1.0
+          },
+          "slippage_bps": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Slippage Bps",
+            "default": 1.0
+          },
+          "min_notional_usd": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Min Notional Usd",
+            "default": 10.0
+          },
+          "max_open_tranches": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Max Open Tranches",
+            "default": 3
+          },
+          "max_buy_price": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Max Buy Price",
+            "default": 0.9994
+          },
+          "min_sell_price": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Min Sell Price",
+            "default": 1.0
+          },
+          "grid_step": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Grid Step",
+            "default": 0.0005
+          },
+          "min_buy_price": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Min Buy Price",
+            "default": 0.99
+          },
+          "max_usdt_allocation_pct": {
+            "type": "number",
+            "maximum": 1.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Max Usdt Allocation Pct",
+            "default": 1.0
+          }
+        },
+        "type": "object",
+        "title": "StrategyConfigPayload"
+      },
+      "TickRequest": {
+        "properties": {
+          "price": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Price",
+            "description": "Current USDT/USD price"
+          },
+          "execute": {
+            "type": "boolean",
+            "title": "Execute",
+            "description": "Apply the decision to the paper portfolio",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "price"
+        ],
+        "title": "TickRequest"
+      },
+      "TrancheResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "entry_price": {
+            "type": "number",
+            "title": "Entry Price"
+          },
+          "notional_usd": {
+            "type": "number",
+            "title": "Notional Usd"
+          },
+          "usdt_amount": {
+            "type": "number",
+            "title": "Usdt Amount"
+          },
+          "opened_at": {
+            "type": "string",
+            "title": "Opened At"
+          },
+          "grid_index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grid Index"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "entry_price",
+          "notional_usd",
+          "usdt_amount",
+          "opened_at",
+          "grid_index"
+        ],
+        "title": "TrancheResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

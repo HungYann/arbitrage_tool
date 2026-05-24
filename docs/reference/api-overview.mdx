@@ -1,0 +1,79 @@
+---
+title: "API overview"
+description: "Human-readable summary of the FastAPI endpoints."
+---
+
+Mintlify also includes an OpenAPI-generated API reference from `openapi.json`. This page summarizes the operator-facing flow.
+
+## Endpoints
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `GET` | `/health` | Check service status and trading mode |
+| `GET` | `/config` | Read current strategy config |
+| `PUT` | `/config` | Replace strategy config and reset paper portfolio |
+| `GET` | `/state` | Read paper balances and open tranches |
+| `GET` | `/balance` | Alias for balance/state queries from MCP and agents |
+| `GET` | `/broker/quote` | Fetch configured Binance symbol bid/ask quote; `source=auto` prefers WebSocket cache and falls back to REST |
+| `GET` | `/broker/ws/status` | Inspect stream status, latest cached quote, and last error |
+| `GET` | `/auto/status` | Inspect automatic trading loop status and pending order |
+| `GET` | `/broker/balance` | Fetch configured Binance base/quote balances |
+| `POST` | `/tick` | Evaluate a price tick; optionally execute paper trade |
+| `POST` | `/trade` | Submit a trade request; service executes strategy |
+| `POST` | `/broker/trade` | Fetch Binance quote and let the service execute strategy |
+| `GET` | `/logs` | Return recent JSONL events |
+| `POST` | `/reset` | Reset paper portfolio |
+| `GET` | `/admin` | Visual dashboard for metrics and recent operations |
+| `GET` | `/admin/config` | Visual parameter editor |
+| `GET` | `/admin/logs` | Visual operation log table |
+| `GET` | `/admin/api/summary` | JSON metrics used by the admin dashboard |
+| `GET` | `/admin/api/logs` | JSON event list for the admin log table |
+| `GET` | `/admin/api/config` | JSON config used by the admin parameter page |
+| `PUT` | `/admin/api/config` | Update parameters from the admin page |
+
+## Tick request
+
+```json
+{
+  "price": 0.9994,
+  "execute": true
+}
+```
+
+Set `execute` to `false` when you only want the decision without mutating the portfolio.
+
+## Tick response
+
+```json
+{
+  "action": "buy",
+  "reason": "price is at or below buy hard cap",
+  "price": 0.9994,
+  "notional_usd": 10000,
+  "tranche_id": null,
+  "grid_index": 0,
+  "expected_profit_usd": 0,
+  "expected_profit_bps": 0,
+  "expected_gross_profit_bps": 0,
+  "executed": true
+}
+```
+
+## Binance quote sources
+
+WebSocket starts automatically with the service. Check the live loop with:
+
+```bash
+curl http://127.0.0.1:8000/auto/status
+curl http://127.0.0.1:8000/broker/quote?source=websocket
+```
+
+Use REST when you want a one-off quote:
+
+```bash
+curl http://127.0.0.1:8000/broker/quote?source=rest
+```
+
+The default strategy pair is `USDT/USD`: USD is both the accounting unit and the payment unit. The default Binance stream is therefore `usdtusd@bookTicker` with `BINANCE_INVERT_PRICE=false`. If you intentionally use a proxy market such as `USDCUSDT`, configure that explicitly and treat it as an adapter choice, not the strategy's default USD accounting model.
+
+The WebSocket client uses direct stream URLs in the form `/ws/<streamName>` and lowercases the symbol inside the stream name. It also accepts combined stream payload envelopes shaped like `{"stream":"...","data":{...}}`, which keeps the parser ready if you later switch to `/stream?streams=...`.

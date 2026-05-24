@@ -1,0 +1,41 @@
+---
+title: "Risk controls"
+description: "Controls that must exist before a paper strategy becomes a live strategy."
+---
+
+Risk controls are part of the product, not an afterthought.
+
+## Current controls
+
+- Paper trading by default.
+- Configurable tranche size through capital and tranche count.
+- Configurable minimum notional.
+- Maximum number of open tranches.
+- Configurable fee, slippage, buy threshold, and minimum profit.
+- Structured JSONL event logs.
+
+## Required before live trading
+
+<Warning>
+  The current project does not include a live broker. These controls should be implemented before any live order execution is added.
+</Warning>
+
+- Exchange-specific minimum notional and lot-size checks.
+- Stale price rejection.
+- Maximum order size.
+- Maximum daily orders.
+- Maximum daily loss.
+- Maximum inventory imbalance.
+- API error circuit breaker.
+- Manual kill switch.
+- Read-only monitoring endpoint.
+- Idempotent order IDs to prevent duplicate orders.
+
+## API key rules
+
+- Use environment variables or a secret manager.
+- Never commit keys to the repository.
+- Disable withdrawal permission.
+- Prefer sub-accounts with limited balances.
+- Rotate keys after any accidental exposure.
+
